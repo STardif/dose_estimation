@@ -247,10 +247,11 @@ class Material:
             label += f"      |_absorption = {self.absorption*100:.2f}%\n"
             label += f"      |_dose = {self.dose_kGy:.3f} kGy\n"
             label += f"      |_doserate = {self.doserate_kGys:.3f} kGy/s\n"
-            return label
         except Exception as e:
             print(e)
             return "failed to get the material absorption info"
+        else:
+            return label
 
 
 class Layer:
