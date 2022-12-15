@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Dose estimation 
 # 2022-12-14
 # Sam Tardif (samuel.tardif@cea.fr)
@@ -44,11 +45,16 @@ class Beam:
     Describe the X-ray beam parameters.
 
     Keyword arguments:
-    beamEnergy -- X-ray beam energy, in eV
-    photonFlux -- X-ray photon flux just before the sample, in photons/s
-    beamWidth  -- first dimension of the X-ray beam, in um
-    beamHeight -- second dimension of the X-ray beam, in um
-    exposure   -- total exposure, in s
+    beamEnergy: float
+        X-ray beam energy, in eV
+    photonFlux: float
+        X-ray photon flux just before the sample, in photons/s
+    beamWidth: float
+        first dimension of the X-ray beam, in um
+    beamHeight: float
+        second dimension of the X-ray beam, in um
+    exposure: float
+        total exposure, in s
     """
     def __init__(self, beamEnergy, photonFlux, beamWidth, beamHeight, exposure):
         self.beamEnergy = beamEnergy  # eV
@@ -64,7 +70,8 @@ class Atom:
     Used to compute the energy-dependant scattering and absorption of a given element.
 
     Keyword arguments:
-    symbol -- international symbol of the element as a string, e.g. "H"
+    symbol: string
+        International symbol of the element, e.g. "H"
     """
     def __init__(self, symbol):
         self.symbol = symbol
@@ -137,8 +144,12 @@ class Material:
     Made up from different elements from the chemical formula
 
     Keyword arguments:
-    formula -- standard formula, e.g. C2H6
-    density -- materials density, in g/cm3
+    formula: string
+        Standard formula, e.g. C2H6
+    density: float
+        Materials density, in g/cm3
+    name: string, optional
+        Material name
     """
     def __init__(self, formula, density, name=None):
         self.name = name
@@ -206,10 +217,10 @@ class Material:
                 re.sub("[A-Z][a-z]*(?![\d\.a-z])", r"\g<0>1", formula),
             )[:-1]
             fParsed[1::2] = map(np.float64, fParsed[1::2])
+        except:
+            raise ValueError("Error reading formula")
+        else:
             return fParsed
-        except Exception as e:
-            print("Error reading formula")
-            raise
 
     def absorption(self, beamEnergy):
         """
@@ -249,11 +260,16 @@ class Layer:
     conversely, if the porosity is 1, the solidMaterial is set to None
 
     Keyword arguments:
-    name -- string to identify the Layer
-    solidMaterial -- Material instance
-    liquidMaterial -- Material instanc
-    thickness -- total thickness of the Layer, in mm
-    porosity -- porosity of the solidMaterial, between 0 and 1
+    name: string
+        To identify the Layer
+    solidMaterial: Material
+        Material instance
+    liquidMaterial: Material
+        Material instance
+    thickness: float
+        Total thickness of the Layer, in mm
+    porosity: float
+        Porosity of the solidMaterial, between 0 and 1
     """
     def __init__(self, name, solidMaterial, liquidMaterial, thickness, porosity):
         self.name = name
