@@ -1,6 +1,4 @@
 # dose_estimation
-(c) CEA
-
 
 a python module to estimate the X-ray dose absorbed by samples (typically electrochemical cells) during X-ray operando experiments
 
