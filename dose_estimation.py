@@ -403,7 +403,7 @@ class Stacking:
                     (t0, 0),
                     l.thickness,
                     1,
-                    facecolor=colors[iii],
+                    facecolor=colors[iii%10],
                     alpha=(1 - l.porosity),
                 )
             )
