@@ -1,0 +1,58 @@
+# X-Ray Mass Attenuation Coefficients Data
+# Source: NIST Physical Reference Data
+# URL: https://physics.nist.gov/PhysRefData/XrayMassCoef/ElemTab/z20.html
+# Element: Calcium
+# Atomic Number (Z): 20
+# Data extracted on: 2025-06-01 13:30:52
+# Total data points: 38
+#
+# Columns:
+#   Absorption edge: Label of the absorption edge (if any in the 1 keV - 20 MeV range)
+#   Energy (MeV): Photon energy
+#   μ/ρ (cm²/g): Mass attenuation coefficient
+#   μen/ρ (cm²/g): Mass energy-absorption coefficient
+#
+# Reference: Hubbell, J.H. and S.M. Seltzer (2004), Tables of X-Ray Mass
+#            Attenuation Coefficients and Mass Energy-Absorption Coefficients
+#            from 1 keV to 20 MeV for Elements Z = 1 to 92 and 48 Additional
+#            Substances of Dosimetric Interest, NISTIR 5632
+#
+# Absorption_Edge   Energy(MeV)     μ/ρ(cm²/g)      μen/ρ(cm²/g)
+                    1.000000E-03    4.867000E+03    4.861000E+03
+                    1.500000E-03    1.714000E+03    1.710000E+03
+                    2.000000E-03    7.999000E+02    7.966000E+02
+                    3.000000E-03    2.676000E+02    2.650000E+02
+                    4.000000E-03    1.218000E+02    1.197000E+02
+                    4.038100E-03    1.187000E+02    1.166000E+02
+              K     4.039100E-03    1.023000E+03    8.887000E+02
+                    5.000000E-03    6.026000E+02    5.373000E+02
+                    6.000000E-03    3.731000E+02    3.387000E+02
+                    8.000000E-03    1.726000E+02    1.600000E+02
+                    1.000000E-02    9.341000E+01    8.744000E+01
+                    1.500000E-02    2.979000E+01    2.804000E+01
+                    2.000000E-02    1.306000E+01    1.220000E+01
+                    3.000000E-02    4.080000E+00    3.665000E+00
+                    4.000000E-02    1.830000E+00    1.538000E+00
+                    5.000000E-02    1.019000E+00    7.822000E-01
+                    6.000000E-02    6.578000E-01    4.520000E-01
+                    8.000000E-02    3.656000E-01    1.958000E-01
+                    1.000000E-01    2.571000E-01    1.085000E-01
+                    1.500000E-01    1.674000E-01    4.876000E-02
+                    2.000000E-01    1.376000E-01    3.639000E-02
+                    3.000000E-01    1.116000E-01    3.146000E-02
+                    4.000000E-01    9.783000E-02    3.060000E-02
+                    5.000000E-01    8.851000E-02    3.019000E-02
+                    6.000000E-01    8.148000E-02    2.979000E-02
+                    8.000000E-01    7.122000E-02    2.884000E-02
+                    1.000000E+00    6.388000E-02    2.780000E-02
+                    1.250000E+00    5.709000E-02    2.650000E-02
+                    1.500000E+00    5.207000E-02    2.532000E-02
+                    2.000000E+00    4.524000E-02    2.352000E-02
+                    3.000000E+00    3.780000E-02    2.147000E-02
+                    4.000000E+00    3.395000E-02    2.052000E-02
+                    5.000000E+00    3.170000E-02    2.007000E-02
+                    6.000000E+00    3.035000E-02    1.992000E-02
+                    8.000000E+00    2.892000E-02    1.997000E-02
+                    1.000000E+01    2.839000E-02    2.022000E-02
+                    1.500000E+01    2.838000E-02    2.088000E-02
+                    2.000000E+01    2.903000E-02    2.140000E-02
