@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dose_estimation"
+version = "1.0.0"
+description = "X-ray dose and dose rate in layered samples (batteries, thin films, bulk crystals) at synchrotrons, monochromatic or white beam"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Samuel Tardif", email = "samuel.tardif@cea.fr" },
+    { name = "Thibaut Jousseaume" },
+]
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.21", "scipy>=1.7"]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.5"]
+tables = ["pandas>=1.3"]
+xraylib = ["xraylib>=4.1"]
+test = ["pytest>=7"]
+all = ["matplotlib>=3.5", "pandas>=1.3", "xraylib>=4.1"]
+
+[project.urls]
+Repository = "https://github.com/STardif/dose_estimation"
+Paper = "https://doi.org/10.1021/acsenergylett.3c00815"
+
+[tool.setuptools]
+packages = ["dose_estimation"]
+
+[tool.setuptools.package-data]
+dose_estimation = ["data/*.dat", "data/NIST_xray_data/*.dat"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
