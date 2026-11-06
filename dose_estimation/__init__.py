@@ -23,11 +23,14 @@ from .legacy import Stacking
 from .materials import Material, parse_formula
 from .stack import ComponentDose, DoseResult, Layer, LayerDose, Stack
 from .xray_data import get_backend, set_backend
+from .thermal import temperature_rise
+from .uncertainty import Uncertain, propagate, propagate_stack
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 __all__ = [
     "Beam", "Spectrum", "Material", "parse_formula", "Layer", "Stack", "Stacking",
     "DoseResult", "ComponentDose", "LayerDose", "ExposureSchedule", "raster_factor",
-    "set_backend", "get_backend", "__version__",
+    "set_backend", "get_backend", "temperature_rise", "Uncertain", "propagate", "propagate_stack",
+    "__version__",
 ]

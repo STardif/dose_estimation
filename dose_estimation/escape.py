@@ -10,9 +10,9 @@ Model (deliberately simple, documented so it can be replaced):
 
 * **Electron energies.**  An absorption on element *i* at photon energy E
   ejects a photoelectron of energy ``E - E_b`` (``E_b`` = highest edge of *i*
-  below E) and leaves a vacancy that relaxes by Auger emission with
-  probability ``1 - omega`` (energy ~``E_b``) or by fluorescence (energy
-  already excluded by ``mu_en``).  Each element contributes in proportion to
+  below E, Elam data via :mod:`atomic`) and leaves a vacancy that relaxes by
+  Auger emission with probability ``1 - omega`` (energy ~``E_b``) or by
+  fluorescence (energy already excluded by ``mu_en``).  Each element contributes in proportion to
   its share of ``mu_en/rho``.
 * **Range.**  Kanaya-Okayama range, ``R = 2.76e-6 A E^1.67 / Z^0.889`` g/cm^2
   (E in keV), combined over elements with Bragg additivity
@@ -20,16 +20,23 @@ Model (deliberately simple, documented so it can be replaced):
   20 keV within 4 %.
 * **Track.**  Straight, isotropic, with the energy loss of a power-law range:
   ``E(s) = E0 (1 - s/R_eff)^(1/1.67)``, so deposition increases towards the
-  end of the track.  Real tracks are tortuous: the reach is the KO range
-  times a *detour factor* (projected penetration / path length).  The default,
-  0.4, is calibrated on micro-beam damage experiments on protein crystals at
-  18.5 keV: it gives a damage-rate reduction of 4.2x from a 15.6 um to a
-  0.84 um beam (Sanishvili et al. 2011 measured 3x) and 2.5x for a 0.7 um
-  line focus (Finfrock et al. 2010: 2.0-2.5x), but puts 95 % of the energy
-  within 2.5 um where damage was seen out to ~4 um.  ``detour_factor=1``
-  (straight tracks over the full range) gives the largest plausible escape,
-  10x in the first case; no escape (the kerma) is the other bound.
-  Emission anisotropy along the polarisation is ignored.
+  end of the track.  Real tracks are tortuous, more so in heavy elements: the
+  reach is the KO range times a *detour factor*.  By default it depends on
+  the mass-weighted mean atomic number of the medium,
+  ``detour = 1.72 Z^-0.357`` (clipped to [0.3, 1]), fitted to the electron
+  Monte Carlo of :mod:`electron_mc` for C to Au at 12-30 keV (6 % rms, 15 %
+  max).  The fit gives ~0.9 for organics, 0.65 for Si, 0.5 for Fe-Ge, 0.36
+  for W-Au.  Emission anisotropy along the polarisation is ignored (the
+  Monte Carlo shows it changes the retention by < 10 %).
+* **Physical dose versus damage.**  The model estimates where the energy
+  goes.  Micro-beam damage experiments on protein crystals at 18.5 keV
+  found a smaller benefit than this physical escape: 3x less damage per
+  dose from a 15.6 to a 0.84 um beam (Sanishvili et al. 2011), where both
+  this model and the Monte Carlo predict ~7x less dose in the footprint.
+  ``detour_factor=0.4`` comes close to the measured damage ratios (3.5x,
+  and 2.3x for a 0.7 um line focus where Finfrock et al. 2010 measured
+  2.0-2.5x); keep the kerma as the conservative bound when damage, not
+  dose, is the question.
 * **Retention.**  The lateral dose map is the beam profile convolved with the
   projected deposition kernel K.  For the *signal-weighted mean* dose the
   retained fraction is ``E_K[A(d)] / A(0)`` with A the autocorrelation of the
@@ -39,22 +46,24 @@ Model (deliberately simple, documented so it can be replaced):
 Only the lateral escape is treated: the beam is assumed to cross the whole
 layer, and leakage across layer interfaces along the beam is neglected.
 Electrons entering the footprint from material outside the beam are absent
-by construction (nothing outside the beam is irradiated).  Expect a factor
-~1.5 on the retained fraction for sub-micron beams; for quantitative work use
-a Monte Carlo transport code (RADDOSE-3D, PENELOPE, Geant4).
+by construction (nothing outside the beam is irradiated).  The estimate
+agrees with the Monte Carlo of :mod:`electron_mc` within ~10 % (0.5 um beams,
+10-25 keV, Si to NMC811); ``Stack.compute(electron_escape="mc")`` runs the
+Monte Carlo itself.
 """
 
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 
+from . import atomic
 from . import xray_data as xd
 
 __all__ = ["electron_range_um", "electron_range_g_cm2", "retention", "component_retention",
-           "DEFAULT_DETOUR_FACTOR"]
+           "DEFAULT_DETOUR_FACTOR", "detour_factor_for"]
 
 _KO_EXP = 1.67
 _N_SAMPLES = 40000
@@ -88,7 +97,14 @@ def _unit_kernel(n: int = _N_SAMPLES, seed: int = 20230519) -> Tuple[np.ndarray,
     return rho * np.cos(phi), rho * np.sin(phi)
 
 
-DEFAULT_DETOUR_FACTOR = 0.4
+#: ``None`` = Z-dependent detour factor (see :func:`detour_factor_for`).
+DEFAULT_DETOUR_FACTOR = None
+
+
+def detour_factor_for(mass_fractions: Dict[str, float]) -> float:
+    """Detour factor fitted to the electron Monte Carlo: ``1.72 Zbar^-0.357`` in [0.3, 1]."""
+    zbar = sum(w * xd.atomic_number(el) for el, w in mass_fractions.items())
+    return float(np.clip(1.72 * max(zbar, 1.0) ** -0.357, 0.3, 1.0))
 
 
 def retention(range_um, width_um: float, height_um: float, profile: str = "tophat") -> Tuple[np.ndarray, np.ndarray]:
@@ -121,7 +137,7 @@ def retention(range_um, width_um: float, height_um: float, profile: str = "topha
 def component_retention(mass_fractions: Dict[str, float], medium_fractions: Dict[str, float],
                         medium_density: float, energy_ev, width_um: float, height_um: float,
                         profile: str = "tophat",
-                        detour_factor: float = DEFAULT_DETOUR_FACTOR) -> Tuple[np.ndarray, np.ndarray]:
+                        detour_factor: Optional[float] = DEFAULT_DETOUR_FACTOR) -> Tuple[np.ndarray, np.ndarray]:
     """Energy-resolved retention for the electrons released in a material.
 
     Parameters
@@ -133,8 +149,9 @@ def component_retention(mass_fractions: Dict[str, float], medium_fractions: Dict
         material itself, or the homogenised layer).
     energy_ev : array
         Photon energies.
-    detour_factor : float
-        Effective reach / Kanaya-Okayama range (see the module docstring).
+    detour_factor : float or None
+        Effective reach / Kanaya-Okayama range; None = Z-dependent default
+        for the medium (see the module docstring).
 
     Returns ``(mean, peak)`` arrays over ``energy_ev``.
     """
@@ -149,10 +166,9 @@ def component_retention(mass_fractions: Dict[str, float], medium_fractions: Dict
     # ranges on a log grid, then interpolate retention in log(range)
     e_list, w_list, idx_list = [], [], []
     for el, men in shares:
-        z = xd.atomic_number(el)
         for k, ek in enumerate(e):
-            eb, lab = xd.binding_energy_below(el, ek)
-            omega = xd.fluorescence_yield(z, lab) if lab else 0.0
+            eb, lab = atomic.binding_energy_below(el, ek)
+            omega = atomic.fluorescence_yield(el, lab) if lab else 0.0
             pe, au = ek - eb, (1.0 - omega) * eb
             tot = pe + au
             frac = men[k] / men_tot[k] if men_tot[k] > 0 else 0.0
@@ -160,6 +176,8 @@ def component_retention(mass_fractions: Dict[str, float], medium_fractions: Dict
             if au > 0:
                 e_list.append(eb / 1e3); w_list.append(frac * au / tot); idx_list.append(k)
     e_el = np.array(e_list)
+    if detour_factor is None:
+        detour_factor = detour_factor_for(medium_fractions)
     if not 0 < detour_factor <= 1.5:
         raise ValueError("detour_factor should be in (0, 1.5]")
     ranges = detour_factor * electron_range_um(medium_fractions, medium_density, e_el)

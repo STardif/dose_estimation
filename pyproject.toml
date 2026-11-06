@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dose_estimation"
-version = "1.0.0"
+version = "1.1.0"
 description = "X-ray dose and dose rate in layered samples (batteries, thin films, bulk crystals) at synchrotrons, monochromatic or white beam"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -30,7 +30,7 @@ Paper = "https://doi.org/10.1021/acsenergylett.3c00815"
 packages = ["dose_estimation"]
 
 [tool.setuptools.package-data]
-dose_estimation = ["data/*.dat", "data/NIST_xray_data/*.dat"]
+dose_estimation = ["data/*.dat", "data/*.csv", "data/*.md", "data/NIST_xray_data/*.dat"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
